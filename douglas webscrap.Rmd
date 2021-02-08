@@ -1,0 +1,85 @@
+---
+title: "webscraping basics"
+author: "Aggie"
+date: "12/21/2020"
+output: html_document
+---
+
+##### web scraping basics with douglas.de
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+library(stringr) # string manipulation
+
+
+douglas_url <- "https://www.douglas.de/Make-up/N%C3%A4gel/Nagellack/index_030401.html?page=2"
+# reading html code from the website
+douglas_web <- read_html(douglas_url) # returns list of 2
+douglas_web
+
+
+# testing to see if i can scrap prices
+# reading the text inside of tag of prices 
+
+priceText <- douglas_web %>%
+  html_node("body") %>%
+  html_text()
+
+#priceText
+
+library(magrittr)
+
+douglas_brands_url <- "https://www.douglas.de/brands"
+
+douglas_brands <- read_html(douglas_brands_url)
+douglas_brands
+
+brands_html_text <- douglas_brands %>%
+  html_nodes('.rd__letters-listing__letter__brands__brand') %>%
+  html_text() %>%
+  strsplit(split = "\n") %>%
+  unlist() %>%
+  .[. != ""]
+  
+head(brands_html_text)
+
+brands <- unique(brands_html_text[brands_html_text != ""])
+head(brands, n = 10)
+BrandsAtDouglas <- as.data.frame(brands)
+BrandsAtDouglas <- BrandsAtDouglas[-c(1, 3), ]
+head(BrandsAtDouglas, n = 10)
+brandsDf <- as.data.frame(BrandsAtDouglas)
+
+# library(RCurl)
+#<span class="rd__copytext rd__copytext--100">
+
+
+# <span class="rd__copytext rd__copytext--100">
+
+
+
+
+# writing into csv
+write.csv(brandsDf, file = "douglas_brands.csv")
+
+```
+
+
+
+### Upnext:
+
+
+Analysis of brands
+
+
+
+find pricing ranges for a few different product brands
+
+
+ratings ofproducts?
+
+
+
+some plots
